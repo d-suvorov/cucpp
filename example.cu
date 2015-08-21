@@ -22,9 +22,9 @@ int main() {
     std::iota(h_a.begin(),  h_a.end(),  0);
     std::iota(h_b.rbegin(), h_b.rend(), 0);
 
-    cucpp::vector<double> d_a(n);
-    cucpp::vector<double> d_b(n);
-    cucpp::vector<double> d_c(n);
+    cucpp::device_vector<double> d_a(n);
+    cucpp::device_vector<double> d_b(n);
+    cucpp::device_vector<double> d_c(n);
 
     cudaMemcpy(d_a.data, h_a.data(), n * sizeof(double), cudaMemcpyHostToDevice);
     cudaMemcpy(d_b.data, h_b.data(), n * sizeof(double), cudaMemcpyHostToDevice);

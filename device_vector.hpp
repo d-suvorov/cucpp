@@ -3,22 +3,36 @@
 namespace cucpp {
 
 template <typename T>
-struct vector {
+class device_vector {
+    size_t length;
     T * data;
 
-    vector(size_t n);
+public:
+    device_vector(size_t length);
+    ~device_vector();
 
-    ~vector();
+    T * get_data();
+    size_t get_length();
 };
 
 template<typename T>
-vector<T>::vector(size_t n) {
-    cudaMalloc((void**) &data, n * sizeof(T));
+device_vector<T>::device_vector(size_t length) : length(length) {
+    cudaMalloc((void**) &data, length * sizeof(T));
 }
 
 template<typename T>
-vector<T>::~vector() {
+device_vector<T>::~device_vector() {
     cudaFree(data);
+}
+
+template <typename T>
+T * device_vector<T>::get_data() {
+    return data();
+}
+
+template <typename T>
+size_t get_length() {
+    return length;
 }
 
 }

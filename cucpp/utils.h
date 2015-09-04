@@ -9,9 +9,9 @@ namespace cucpp {
 class cuda_error : public std::exception {
     cudaError_t code;
 
+public:
     cuda_error(cudaError_t code) : code(code) {}
 
-public:
     cudaError_t get() {
         return code;
     }

@@ -2,6 +2,12 @@
 
 #include "cuda_runtime.h"
 
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+#include <string>
+
 namespace cucpp {
 
 template <typename T>
@@ -19,6 +25,11 @@ public:
     T       * get_data();
 
     size_t get_length() const;
+
+    void copy_to_host(T * h_ptr) const;
+
+private:
+    size_t get_size();
 };
 
 // TODO eliminate copy-paste
@@ -58,8 +69,21 @@ T * device_vector<T>::get_data() {
 }
 
 template <typename T>
-size_t get_length() {
+size_t device_vector<T>::get_length() const {
     return length;
+}
+
+template <typename T>
+void device_vector<T>::copy_to_host(T * h_ptr) const {
+    cudaMemcpy(h_ptr, data, length * sizeof(T), cudaMemcpyDeviceToHost);
+}
+
+template <typename T>
+std::ostream& operator<<(std::ostream& out, device_vector<T> const& v) {
+    std::vector<T> h_v(v.get_length());
+    v.copy_to_host(h_v.data());
+    std::copy(h_v.begin(), h_v.end(), std::ostream_iterator<T>(out, " "));
+    return out;
 }
 
 }

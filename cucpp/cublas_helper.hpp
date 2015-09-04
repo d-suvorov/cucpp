@@ -53,14 +53,14 @@ T * get_pointer(scalar<T> a) {
 
 // AXPY
 //
-void cublas_axpy(cublas_handle handle, size_t n, scalar<float> alpha,
-                 device_vector<float> x, int incx, device_vector<float> y, int incy) {
+void cublas_axpy(cublas_handle & handle, size_t n, scalar<float> alpha,
+                 device_vector<float> & x, int incx, device_vector<float> & y, int incy) {
     // TODO check if we can cast n to int
     cublasSaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.get_data(), incx, y.get_data(), incy);
 }
 
-void cublas_axpy(cublas_handle handle, size_t n, scalar<double> alpha,
-                 device_vector<double> x, int incx, device_vector<double> y, int incy) {
+void cublas_axpy(cublas_handle & handle, size_t n, scalar<double> alpha,
+                 device_vector<double> & x, int incx, device_vector<double> & y, int incy) {
     // TODO check if we can cast n to int
     cublasDaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.get_data(), incx, y.get_data(), incy);
 }

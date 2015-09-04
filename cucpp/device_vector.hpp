@@ -1,5 +1,7 @@
 #pragma once
 
+#include "cuda_runtime.h"
+
 namespace cucpp {
 
 template <typename T>
@@ -9,8 +11,8 @@ class device_vector {
 
 public:
     device_vector(size_t length);
-    device_vector(device_vector const& rhs);
-    device_vector(double * h_ptr, size_t length);
+    device_vector(device_vector const & rhs);
+    device_vector(T * h_ptr, size_t length);
     ~device_vector();
 
     T const * get_data() const;
@@ -21,25 +23,26 @@ public:
 
 // TODO eliminate copy-paste
 
-template<typename T>
+template <typename T>
 device_vector<T>::device_vector(size_t length) : length(length) {
     cudaMalloc((void**) &data, length * sizeof(T));
 }
 
 template <typename T>
-device_vector<T>::device_vector(device_vector<T> const& rhs) : length(rhs.length) {
+device_vector<T>::device_vector(device_vector<T> const & rhs) : length(rhs.length) {
     size_t size = length * sizeof(T);
     cudaMalloc((void**) &data, size);
     cudaMemcpy(data, rhs.get_data(), size, cudaMemcpyDeviceToDevice);
 }
 
 template <typename T>
-device_vector<T>::device_vector(double * h_ptr, size_t length) : length(length) {
-    cudaMalloc((void**) &data, length * sizeof(T));
-    cudaMemcpy(data, h_ptr, length * sizeof(T), cudaMemcpyHostToDevice);
+device_vector<T>::device_vector(T * h_ptr, size_t length) : length(length) {
+    size_t size = length * sizeof(T);
+    cudaMalloc((void**) &data, size);
+    cudaMemcpy(data, h_ptr, size, cudaMemcpyHostToDevice);
 }
 
-template<typename T>
+template <typename T>
 device_vector<T>::~device_vector() {
     cudaFree(data);
 }

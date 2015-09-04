@@ -8,7 +8,7 @@
 #include "device_vector.hpp"
 #include "cublas_helper.hpp"
 
-int main() {
+void test() {
     const size_t n = 1000;
 
     std::vector<double> h_a(n), h_b(n);
@@ -19,16 +19,18 @@ int main() {
     cucpp::device_vector<double> d_b(h_b.data(), n);
 
     cucpp::cublas_handle handle;
-    // a = a + b
-    cublas_axpy(handle, n, 1.0, d_a, 1, d_b, 1);
+    double alpha = 1.0;
+    // b[i] = alpha * a[i] + b[i] , forall i = 0 .. n - 1
+    cublas_axpy(handle, n, alpha, d_a, 1, d_b, 1);
 
-    cudaMemcpy(h_a.data(), d_a.get_data(), n * sizeof(double), cudaMemcpyDeviceToHost);
-    
-    for (double i : h_a) {
-        if (i != n - 1)
-            std::cout << "Failed\n";
-    }
-    std::cout << "Passed\n";
+    cudaMemcpy(h_b.data(), d_b.get_data(), n * sizeof(double), cudaMemcpyDeviceToHost);
+
+    bool ok = std::all_of(h_b.begin(), h_b.end(), [n](double x){ return x == n - 1; });
+    std::cout << (ok ? "Passed" : "Failed") << std::endl;
+}
+
+int main() {
+    test();
 
     cudaDeviceReset();
 

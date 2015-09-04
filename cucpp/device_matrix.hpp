@@ -1,5 +1,7 @@
 #pragma once
 
+#include "cuda_runtime.h"
+
 namespace cucpp {
 
 template <typename T>

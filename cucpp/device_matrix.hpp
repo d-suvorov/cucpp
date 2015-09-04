@@ -10,7 +10,7 @@ class device_matrix {
     T * elements;
 
 public:
-    device_matrix(double h_ptr, size_t width, size_t height, size_t pitch);
+    device_matrix(double * h_ptr, size_t width, size_t height, size_t pitch);
     ~device_matrix();
 };
 

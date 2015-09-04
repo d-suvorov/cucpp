@@ -19,7 +19,7 @@ public:
         return handle;
     }
 
-    void set_pointer_mode() {
+    void set_pointer_mode(cublasPointerMode_t mode) {
         cublasSetPointerMode(handle, mode);
     }
 
@@ -35,7 +35,7 @@ public:
 
 private:
 
-}
+};
 
 template <typename T>
 using scalar = boost::variant<T, T*>;
@@ -56,13 +56,13 @@ T * get_pointer(scalar<T> a) {
 void cublas_axpy(cublas_handle handle, size_t n, scalar<float> alpha,
                  device_vector<float> x, int incx, device_vector<float> y, int incy) {
     // TODO check if we can cast n to int
-    cublasSaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.data(), incx, y.data(), incy);
+    cublasSaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.get_data(), incx, y.get_data(), incy);
 }
 
-void cublas_axpy(cublas_handle handle, size_t n, scalar<float> alpha,
-                 device_vector<float> x, int incx, device_vector<float> y, int incy) {
+void cublas_axpy(cublas_handle handle, size_t n, scalar<double> alpha,
+                 device_vector<double> x, int incx, device_vector<double> y, int incy) {
     // TODO check if we can cast n to int
-    cublasSaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.data(), incx, y.data(), incy);
+    cublasDaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.get_data(), incx, y.get_data(), incy);
 }
 
 /*

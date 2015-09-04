@@ -1,5 +1,7 @@
 #pragma once
 
+#include <complex>
+
 #include "device_vector.hpp"
 #include "device_matrix.hpp"
 
@@ -40,6 +42,7 @@ using scalar = boost::variant<T, T*>;
 
 template <typename T>
 T * get_pointer(scalar<T> a) {
+    // TODO visitor?
     if (T * p_val = boost::get<T>(&a)) {
         return p_val;
     } else if (T ** p_ptr = boost::get<T*>(&a)) {
@@ -48,10 +51,36 @@ T * get_pointer(scalar<T> a) {
     return nullptr; // never happens
 }
 
-template <typename T>
-void cublas_axpy(cublas_handle handle, scalar<T> alpha, device_vector<T> x, inc incx, device_vector<T> y, int incy) {
-    
+// AXPY
+//
+void cublas_axpy(cublas_handle handle, size_t n, scalar<float> alpha,
+                 device_vector<float> x, int incx, device_vector<float> y, int incy) {
+    // TODO check if we can cast n to int
+    cublasSaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.data(), incx, y.data(), incy);
 }
+
+void cublas_axpy(cublas_handle handle, size_t n, scalar<float> alpha,
+                 device_vector<float> x, int incx, device_vector<float> y, int incy) {
+    // TODO check if we can cast n to int
+    cublasSaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.data(), incx, y.data(), incy);
+}
+
+/*
+ TODO unimplemented
+void cublas_axpy(cublas_handle handle, size_t n, scalar<cuComplex> alpha,
+                 device_vector<cuComplex> x, int incx, device_vector<cuComplex> y, int incy) {
+    // TODO check if we can cast n to int
+    cublasSaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.data(), incx, y.data(), incy);
+}
+
+void cublas_axpy(cublas_handle handle, size_t n, scalar<cuDoubleComplex> alpha,
+                 device_vector<cuDoubleComplex> x, int incx, device_vector<cuDoubleComplex> y, int incy) {
+    // TODO check if we can cast n to int
+    cublasSaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.data(), incx, y.data(), incy);
+}
+*/
+
+// AXPY
 
 
 }

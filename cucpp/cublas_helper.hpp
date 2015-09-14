@@ -73,6 +73,8 @@ public:
     }
 };
 
+// TODO get rid of copy-paste vvvvvvvv
+
 // AMAX
 size_t cublas_iamax(cublas_handle & handle, size_t n, device_vector<float> & x, int incx) {
     int result;
@@ -98,6 +100,58 @@ size_t cublas_iamax(cublas_handle & handle, size_t n, device_vector<cuDoubleComp
     return static_cast<size_t>(result - 1);
 }
 // AMAX
+
+// AMIN
+size_t cublas_iamin(cublas_handle & handle, size_t n, device_vector<float> & x, int incx) {
+    int result;
+    cublasIsamin(handle.get(), static_cast<int>(n), x.get_data(), incx, &result);
+    return static_cast<size_t>(result - 1);
+}
+
+size_t cublas_iamin(cublas_handle & handle, size_t n, device_vector<double> & x, int incx) {
+    int result;
+    cublasIdamin(handle.get(), static_cast<int>(n), x.get_data(), incx, &result);
+    return static_cast<size_t>(result - 1);
+}
+
+size_t cublas_iamin(cublas_handle & handle, size_t n, device_vector<cuComplex> & x, int incx) {
+    int result;
+    cublasIcamin(handle.get(), static_cast<int>(n), x.get_data(), incx, &result);
+    return static_cast<size_t>(result - 1);
+}
+
+size_t cublas_iamin(cublas_handle & handle, size_t n, device_vector<cuDoubleComplex> & x, int incx) {
+    int result;
+    cublasIzamin(handle.get(), static_cast<int>(n), x.get_data(), incx, &result);
+    return static_cast<size_t>(result - 1);
+}
+// AMIN
+
+// ASUM
+float cublas_asum(cublas_handle & handle, size_t n, device_vector<float> & x, int incx) {
+    float result;
+    cublasSasum(handle.get(), static_cast<int>(n), x.get_data(), incx, &result);
+    return result;
+}
+
+double cublas_asum(cublas_handle & handle, size_t n, device_vector<double> & x, int incx) {
+    double result;
+    cublasDasum(handle.get(), static_cast<int>(n), x.get_data(), incx, &result);
+    return result;
+}
+
+float cublas_asum(cublas_handle & handle, size_t n, device_vector<cuComplex> & x, int incx) {
+    float result;
+    cublasScasum(handle.get(), static_cast<int>(n), x.get_data(), incx, &result);
+    return result;
+}
+
+double cublas_asum(cublas_handle & handle, size_t n, device_vector<cuDoubleComplex> & x, int incx) {
+    double result;
+    cublasDzasum(handle.get(), static_cast<int>(n), x.get_data(), incx, &result);
+    return result;
+}
+// ASUM
 
 // AXPY
 void cublas_axpy(cublas_handle & handle, size_t n, scalar<float> alpha,

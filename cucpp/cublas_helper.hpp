@@ -64,6 +64,8 @@ public:
     T get(cudaStream_t stream = 0) {
         T result;
         cudaMemcpyAsync(&result, ptr, sizeof(T), cudaMemcpyDeviceToHost, stream);
+        cudaStreamSynchronize(stream);
+        return result;
     }
 
     ~scalar_result() {
@@ -73,27 +75,27 @@ public:
 
 // AMAX
 size_t cublas_iamax(cublas_handle & handle, size_t n, device_vector<float> & x, int incx) {
-    scalar_result<int> result;
-    cublasIsamax(handle.get(), static_cast<int>(n), x.get_data(), incx, result.get_ptr());
-    return static_cast<size_t>(result.get());
+    int result;
+    cublasIsamax(handle.get(), static_cast<int>(n), x.get_data(), incx, &result);
+    return static_cast<size_t>(result - 1);
 }
 
 size_t cublas_iamax(cublas_handle & handle, size_t n, device_vector<double> & x, int incx) {
-    scalar_result<int> result;
-    cublasIdamax(handle.get(), static_cast<int>(n), x.get_data(), incx, result.get_ptr());
-    return static_cast<size_t>(result.get());
+    int result;
+    cublasIdamax(handle.get(), static_cast<int>(n), x.get_data(), incx, &result);
+    return static_cast<size_t>(result - 1);
 }
 
 size_t cublas_iamax(cublas_handle & handle, size_t n, device_vector<cuComplex> & x, int incx) {
-    scalar_result<int> result;
-    cublasIcamax(handle.get(), static_cast<int>(n), x.get_data(), incx, result.get_ptr());
-    return static_cast<size_t>(result.get());
+    int result;
+    cublasIcamax(handle.get(), static_cast<int>(n), x.get_data(), incx, &result);
+    return static_cast<size_t>(result - 1);
 }
 
 size_t cublas_iamax(cublas_handle & handle, size_t n, device_vector<cuDoubleComplex> & x, int incx) {
-    scalar_result<int> result;
-    cublasIzamax(handle.get(), static_cast<int>(n), x.get_data(), incx, result.get_ptr());
-    return static_cast<size_t>(result.get());
+    int result;
+    cublasIzamax(handle.get(), static_cast<int>(n), x.get_data(), incx, &result);
+    return static_cast<size_t>(result - 1);
 }
 // AMAX
 

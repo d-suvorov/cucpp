@@ -37,9 +37,18 @@ void test1() {
     std::cout << (max_idx == 2 ? "Passed" : "Failed") << std::endl;
 }
 
+void test2() {
+    std::vector<double> h_a = {1, 2, 3, 4, 5};
+    cucpp::device_vector<double> d_a(h_a.data(), h_a.size());
+    cucpp::cublas_handle handle;
+    double sum = cublas_asum(handle, h_a.size(), d_a, 1);
+    std::cout << (sum == 15 ? "Passed" : "Failed") << std::endl;
+}
+
 int main() {
     test();
     test1();
+    test2();
 
     cudaDeviceReset();
 

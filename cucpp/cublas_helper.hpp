@@ -1,7 +1,5 @@
 #pragma once
 
-#include <complex>
-
 #include "device_vector.hpp"
 #include "device_matrix.hpp"
 
@@ -42,7 +40,6 @@ using scalar = boost::variant<T, T*>;
 
 template <typename T>
 T * get_pointer(scalar<T> a) {
-    // TODO visitor?
     if (T * p_val = boost::get<T>(&a)) {
         return p_val;
     } else if (T ** p_ptr = boost::get<T*>(&a)) {
@@ -51,35 +48,75 @@ T * get_pointer(scalar<T> a) {
     return nullptr; // never happens
 }
 
+template <typename T>
+class scalar_result {
+    T * ptr;
+
+public:
+    scalar_result() {
+        cudaMalloc((void**) &ptr, sizeof(T));
+    }
+
+    T * get_ptr() {
+        return ptr;
+    }
+
+    T get(cudaStream_t stream = 0) {
+        T result;
+        cudaMemcpyAsync(&result, ptr, sizeof(T), cudaMemcpyDeviceToHost, stream);
+    }
+
+    ~scalar_result() {
+        cudaFree(ptr);
+    }
+};
+
+// AMAX
+size_t cublas_iamax(cublas_handle & handle, size_t n, device_vector<float> & x, int incx) {
+    scalar_result<int> result;
+    cublasIsamax(handle.get(), static_cast<int>(n), x.get_data(), incx, result.get_ptr());
+    return static_cast<size_t>(result.get());
+}
+
+size_t cublas_iamax(cublas_handle & handle, size_t n, device_vector<double> & x, int incx) {
+    scalar_result<int> result;
+    cublasIdamax(handle.get(), static_cast<int>(n), x.get_data(), incx, result.get_ptr());
+    return static_cast<size_t>(result.get());
+}
+
+size_t cublas_iamax(cublas_handle & handle, size_t n, device_vector<cuComplex> & x, int incx) {
+    scalar_result<int> result;
+    cublasIcamax(handle.get(), static_cast<int>(n), x.get_data(), incx, result.get_ptr());
+    return static_cast<size_t>(result.get());
+}
+
+size_t cublas_iamax(cublas_handle & handle, size_t n, device_vector<cuDoubleComplex> & x, int incx) {
+    scalar_result<int> result;
+    cublasIzamax(handle.get(), static_cast<int>(n), x.get_data(), incx, result.get_ptr());
+    return static_cast<size_t>(result.get());
+}
+// AMAX
+
 // AXPY
-//
 void cublas_axpy(cublas_handle & handle, size_t n, scalar<float> alpha,
                  device_vector<float> & x, int incx, device_vector<float> & y, int incy) {
-    // TODO check if we can cast n to int
     cublasSaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.get_data(), incx, y.get_data(), incy);
 }
 
 void cublas_axpy(cublas_handle & handle, size_t n, scalar<double> alpha,
                  device_vector<double> & x, int incx, device_vector<double> & y, int incy) {
-    // TODO check if we can cast n to int
     cublasDaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.get_data(), incx, y.get_data(), incy);
 }
 
-/*
- TODO unimplemented
 void cublas_axpy(cublas_handle handle, size_t n, scalar<cuComplex> alpha,
                  device_vector<cuComplex> x, int incx, device_vector<cuComplex> y, int incy) {
-    // TODO check if we can cast n to int
-    cublasSaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.data(), incx, y.data(), incy);
+    cublasCaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.get_data(), incx, y.get_data(), incy);
 }
 
 void cublas_axpy(cublas_handle handle, size_t n, scalar<cuDoubleComplex> alpha,
                  device_vector<cuDoubleComplex> x, int incx, device_vector<cuDoubleComplex> y, int incy) {
-    // TODO check if we can cast n to int
-    cublasSaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.data(), incx, y.data(), incy);
+    cublasZaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.get_data(), incx, y.get_data(), incy);
 }
-*/
-
 // AXPY
 
 

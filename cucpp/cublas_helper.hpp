@@ -261,6 +261,59 @@ double cublas_nrm2(cublas_handle & handle, size_t n, device_vector<cuDoubleCompl
 }
 // NRM2
 
+// ROT
+template <typename CublasRoutine, typename Cos, typename Sin, typename T>
+void cublas_rot_impl(cublas_handle & handle, size_t n,
+                     device_vector<T> & x, int incx,
+                     device_vector<T> & y, int incy,
+                     scalar<Cos> c, scalar<Sin> s, CublasRoutine routine) {
+    routine(handle.get(), static_cast<int>(n), x.get_data(), incx, y.get_data(), incy,
+            get_pointer(c), get_pointer(s));
+}
+
+void cublas_rot(cublas_handle & handle, size_t n,
+                device_vector<float> & x, int incx,
+                device_vector<float> & y, int incy,
+                scalar<float> c, scalar<float> s) {
+    cublas_rot_impl(handle, n, x, incx, y, incy, c, s, cublasSrot);
+}
+
+void cublas_rot(cublas_handle & handle, size_t n,
+                device_vector<double> & x, int incx,
+                device_vector<double> & y, int incy,
+                scalar<double> c, scalar<double> s) {
+    cublas_rot_impl(handle, n, x, incx, y, incy, c, s, cublasDrot);
+}
+
+void cublas_rot(cublas_handle & handle, size_t n,
+                device_vector<cuComplex> & x, int incx,
+                device_vector<cuComplex> & y, int incy,
+                scalar<float> c, scalar<cuComplex> s) {
+    cublas_rot_impl(handle, n, x, incx, y, incy, c, s, cublasCrot);
+}
+
+void cublas_rot(cublas_handle & handle, size_t n,
+                device_vector<cuComplex> & x, int incx,
+                device_vector<cuComplex> & y, int incy,
+                scalar<float> c, scalar<float> s) {
+    cublas_rot_impl(handle, n, x, incx, y, incy, c, s, cublasCsrot);
+}
+
+void cublas_rot(cublas_handle & handle, size_t n,
+                device_vector<cuDoubleComplex> & x, int incx,
+                device_vector<cuDoubleComplex> & y, int incy,
+                scalar<double> c, scalar<cuDoubleComplex> s) {
+    cublas_rot_impl(handle, n, x, incx, y, incy, c, s, cublasZrot);
+}
+
+void cublas_rot(cublas_handle & handle, size_t n,
+                device_vector<cuDoubleComplex> & x, int incx,
+                device_vector<cuDoubleComplex> & y, int incy,
+                scalar<double> c, scalar<double> s) {
+    cublas_rot_impl(handle, n, x, incx, y, incy, c, s, cublasZdrot);
+}
+// ROT
+
 // SCAL
 template <typename CublasRoutine, typename T, typename Scalar>
 void cublas_scal_impl(cublas_handle & handle, size_t n, scalar<Scalar> alpha, device_vector<T> & x, int incx,

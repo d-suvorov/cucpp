@@ -261,6 +261,40 @@ double cublas_nrm2(cublas_handle & handle, size_t n, device_vector<cuDoubleCompl
 }
 // NRM2
 
+// SCAL
+template <typename CublasRoutine, typename T, typename Scalar>
+void cublas_scal_impl(cublas_handle & handle, size_t n, scalar<Scalar> alpha, device_vector<T> & x, int incx,
+                      CublasRoutine routine) {
+    routine(handle.get(), static_cast<int>(n), get_pointer(alpha), x.get_data(), incx);
+}
+
+void cublas_scal(cublas_handle & handle, size_t n, scalar<float> alpha, device_vector<float> & x, int incx) {
+    cublas_scal_impl(handle, n, alpha, x, incx, cublasSscal);
+}
+
+void cublas_scal(cublas_handle & handle, size_t n, scalar<double> alpha, device_vector<double> & x, int incx) {
+    cublas_scal_impl(handle, n, alpha, x, incx, cublasDscal);
+}
+
+void cublas_scal(cublas_handle & handle, size_t n, scalar<cuComplex> alpha, device_vector<cuComplex> & x, int incx) {
+    cublas_scal_impl(handle, n, alpha, x, incx, cublasCscal);
+}
+
+void cublas_scal(cublas_handle & handle, size_t n, scalar<float> alpha, device_vector<cuComplex> & x, int incx) {
+    cublas_scal_impl(handle, n, alpha, x, incx, cublasCsscal);
+}
+
+void cublas_scal(cublas_handle & handle, size_t n, scalar<cuDoubleComplex> alpha,
+                 device_vector<cuDoubleComplex> & x, int incx) {
+    cublas_scal_impl(handle, n, alpha, x, incx, cublasZscal);
+}
+
+void cublas_scal(cublas_handle & handle, size_t n, scalar<double> alpha,
+                 device_vector<cuDoubleComplex> & x, int incx) {
+    cublas_scal_impl(handle, n, alpha, x, incx, cublasZdscal);
+}
+// SCAL
+
 // SWAP
 template <typename CublasRoutine, typename T>
 void cublas_swap_impl(cublas_handle & handle, size_t n,

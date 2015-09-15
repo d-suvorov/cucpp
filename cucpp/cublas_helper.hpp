@@ -196,5 +196,69 @@ void cublas_copy(cublas_handle & handle, size_t n,
 }
 // COPY
 
+// DOT
+template <typename CublasRoutine, typename T, typename Ret>
+Ret cublas_dot_impl(cublas_handle & handle, size_t n,
+                    device_vector<T> const & x, int incx,
+                    device_vector<T> const & y, int incy, CublasRoutine routine) {
+    Ret result;
+    routine(handle.get(), static_cast<int>(n), x.get_data(), incx, y.get_data(), incy, &result);
+    return result;
+}
+
+float cublas_dot(cublas_handle & handle, size_t n,
+                 device_vector<float> const & x, int incx,
+                 device_vector<float> const & y, int incy) {
+    return cublas_dot_impl<decltype(cublasSdot), float, float>(handle, n, x, incx, y, incy, cublasSdot);
+}
+
+double cublas_dot(cublas_handle & handle, size_t n,
+                  device_vector<double> const & x, int incx,
+                  device_vector<double> const & y, int incy) {
+    return cublas_dot_impl<decltype(cublasDdot), double, double>(handle, n, x, incx, y, incy, cublasDdot);
+}
+
+cuComplex cublas_dot(cublas_handle & handle, size_t n,
+                     device_vector<cuComplex> const & x, int incx,
+                     device_vector<cuComplex> const & y, int incy, bool conjugate = false) {
+    auto routine = conjugate ? cublasCdotc : cublasCdotu;
+    return cublas_dot_impl<decltype(routine), cuComplex, cuComplex>(handle, n, x, incx, y, incy, routine);
+}
+
+cuDoubleComplex cublas_dot(cublas_handle & handle, size_t n,
+                           device_vector<cuDoubleComplex> const & x, int incx,
+                           device_vector<cuDoubleComplex> const & y, int incy, bool conjugate = false) {
+    auto routine = conjugate ? cublasZdotc : cublasZdotu;
+    return cublas_dot_impl<decltype(routine), cuDoubleComplex, cuDoubleComplex>
+        (handle, n, x, incx, y, incy, routine);
+}
+// DOT
+
+// NRM2
+template <typename CublasRoutine, typename T, typename Ret>
+Ret cublas_nrm2_impl(cublas_handle & handle, size_t n,
+                     device_vector<T> const & x, int incx,
+                     CublasRoutine routine) {
+    Ret result;
+    routine(handle.get(), static_cast<int>(n), x.get_data(), incx, &result);
+    return result;
+}
+
+float cublas_nrm2(cublas_handle & handle, size_t n, device_vector<float> const & x, int incx) {
+    return cublas_nrm2_impl<decltype(cublasSnrm2), float, float>(handle, n, x, incx, cublasSnrm2);
+}
+
+double cublas_nrm2(cublas_handle & handle, size_t n, device_vector<double> const & x, int incx) {
+    return cublas_nrm2_impl<decltype(cublasDnrm2), double, double>(handle, n, x, incx, cublasDnrm2);
+}
+
+float cublas_nrm2(cublas_handle & handle, size_t n, device_vector<cuComplex> const & x, int incx) {
+    return cublas_nrm2_impl<decltype(cublasScnrm2), cuComplex, float>(handle, n, x, incx, cublasScnrm2);
+}
+
+double cublas_nrm2(cublas_handle & handle, size_t n, device_vector<cuDoubleComplex> const & x, int incx) {
+    return cublas_nrm2_impl<decltype(cublasDznrm2), cuDoubleComplex, double>(handle, n, x, incx, cublasDznrm2);
+}
+// NRM2
 
 }

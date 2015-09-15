@@ -79,7 +79,7 @@ size_t cublas_imaxmin_impl(cublas_handle & handle, size_t n, device_vector<T> & 
                            CublasRoutine routine) {
     int result;
     routine(handle.get(), static_cast<int>(n), x.get_data(), incx, &result);
-    return static_cast<size_t>(result - 1);
+    return static_cast<size_t>(result - 1); // subtract 1 to reflect BLAS 1-indexing
 }
 
 // AMAX

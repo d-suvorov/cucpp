@@ -18,6 +18,7 @@ class device_vector {
 public:
     device_vector(size_t length);
     device_vector(device_vector const & rhs);
+    device_vector(device_vector && rhs);
     device_vector(T * h_ptr, size_t length);
     ~device_vector();
 
@@ -44,6 +45,15 @@ device_vector<T>::device_vector(device_vector<T> const & rhs) : length(rhs.lengt
     size_t size = length * sizeof(T);
     cudaMalloc((void**) &data, size);
     cudaMemcpy(data, rhs.get_data(), size, cudaMemcpyDeviceToDevice);
+}
+
+template <typename T>
+device_vector<T>::device_vector(device_vector<T> && rhs)
+    : length(rhs.length)
+    , data(rhs.data)
+{
+    rhs.length = 0;
+    rhs.data = nullptr;
 }
 
 template <typename T>

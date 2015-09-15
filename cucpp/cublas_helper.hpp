@@ -146,25 +146,55 @@ double cublas_asum(cublas_handle & handle, size_t n, device_vector<cuDoubleCompl
 
 // AXPY
 void cublas_axpy(cublas_handle & handle, size_t n, scalar<float> alpha,
-                 device_vector<float> & x, int incx, device_vector<float> & y, int incy) {
+                 device_vector<float> const & x, int incx,
+                 device_vector<float>       & y, int incy) {
     cublasSaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.get_data(), incx, y.get_data(), incy);
 }
 
 void cublas_axpy(cublas_handle & handle, size_t n, scalar<double> alpha,
-                 device_vector<double> & x, int incx, device_vector<double> & y, int incy) {
+                 device_vector<double> const & x, int incx,
+                 device_vector<double>       & y, int incy) {
     cublasDaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.get_data(), incx, y.get_data(), incy);
 }
 
 void cublas_axpy(cublas_handle handle, size_t n, scalar<cuComplex> alpha,
-                 device_vector<cuComplex> x, int incx, device_vector<cuComplex> y, int incy) {
+                 device_vector<cuComplex> const & x, int incx,
+                 device_vector<cuComplex>       & y, int incy) {
     cublasCaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.get_data(), incx, y.get_data(), incy);
 }
 
 void cublas_axpy(cublas_handle handle, size_t n, scalar<cuDoubleComplex> alpha,
-                 device_vector<cuDoubleComplex> x, int incx, device_vector<cuDoubleComplex> y, int incy) {
+                 device_vector<cuDoubleComplex> const & x, int incx,
+                 device_vector<cuDoubleComplex>       & y, int incy) {
     cublasZaxpy(handle.get(), static_cast<int>(n), get_pointer(alpha), x.get_data(), incx, y.get_data(), incy);
 }
 // AXPY
+
+// COPY
+void cublas_copy(cublas_handle & handle, size_t n,
+                 device_vector<float> const & x, int incx,
+                 device_vector<float>       & y, int incy) {
+    cublasScopy(handle.get(), static_cast<int>(n), x.get_data(), incx, y.get_data(), incy);
+}
+
+void cublas_copy(cublas_handle & handle, size_t n,
+                 device_vector<double> const & x, int incx,
+                 device_vector<double>       & y, int incy) {
+    cublasDcopy(handle.get(), static_cast<int>(n), x.get_data(), incx, y.get_data(), incy);
+}
+
+void cublas_copy(cublas_handle & handle, size_t n,
+                 device_vector<cuComplex> const & x, int incx,
+                 device_vector<cuComplex>       & y, int incy) {
+    cublasCcopy(handle.get(), static_cast<int>(n), x.get_data(), incx, y.get_data(), incy);
+}
+
+void cublas_copy(cublas_handle & handle, size_t n,
+                 device_vector<cuDoubleComplex> const & x, int incx,
+                 device_vector<cuDoubleComplex>       & y, int incy) {
+    cublasZcopy(handle.get(), static_cast<int>(n), x.get_data(), incx, y.get_data(), incy);
+}
+// COPY
 
 
 }

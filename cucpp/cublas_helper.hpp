@@ -261,4 +261,37 @@ double cublas_nrm2(cublas_handle & handle, size_t n, device_vector<cuDoubleCompl
 }
 // NRM2
 
+// SWAP
+template <typename CublasRoutine, typename T>
+void cublas_swap_impl(cublas_handle & handle, size_t n,
+                      device_vector<T> & x, int incx,
+                      device_vector<T> & y, int incy, CublasRoutine routine) {
+    routine(handle.get(), static_cast<int>(n), x.get_data(), incx, y.get_data(), incy);
+}
+
+void cublas_swap(cublas_handle & handle, size_t n,
+                 device_vector<float> & x, int incx,
+                 device_vector<float> & y, int incy) {
+    cublas_swap_impl(handle, n, x, incx, y, incy, cublasSswap);
+}
+
+void cublas_swap(cublas_handle & handle, size_t n,
+                 device_vector<double> & x, int incx,
+                 device_vector<double> & y, int incy) {
+    cublas_swap_impl(handle, n, x, incx, y, incy, cublasDswap);
+}
+
+void cublas_swap(cublas_handle & handle, size_t n,
+                 device_vector<cuComplex> & x, int incx,
+                 device_vector<cuComplex> & y, int incy) {
+    cublas_swap_impl(handle, n, x, incx, y, incy, cublasCswap);
+}
+
+void cublas_swap(cublas_handle & handle, size_t n,
+                 device_vector<cuDoubleComplex> & x, int incx,
+                 device_vector<cuDoubleComplex> & y, int incy) {
+    cublas_swap_impl(handle, n, x, incx, y, incy, cublasZswap);
+}
+// SWAP
+
 }
